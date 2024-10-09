@@ -1,5 +1,3 @@
-Here’s a `README.md` file based on your project, which appears to simulate active inference in a T-maze environment using Python:
-
 ```markdown
 # Active Inference in a T-Maze Environment
 
