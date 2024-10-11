@@ -1,89 +1,74 @@
-```markdown
-# Active Inference in a T-Maze Environment
+# T-Maze Active Inference Simulation
 
-This project simulates an agent's decision-making process in a T-maze environment using **Active Inference**. The environment is implemented as a grid world, and the agent makes decisions based on prior beliefs, observations, and rewards. The simulation is run through multiple rounds with varying parameters to analyze the agent's behavior.
+## Overview
+This project implements an Active Inference agent navigating a custom-designed T-maze environment. The environment is a grid-based T-maze with 7 possible locations, adding complexity to the typical T-maze setup. The agent must navigate the maze, receive hints, and plan its actions to maximize rewards while avoiding punishments. This simulation focuses on exploring how changes in the reward, punishment, and neutral parameters (C-matrix) affect the agent's decision-making dynamics.
 
-## Table of Contents
-- [Installation](#installation)
-- [Project Structure](#project-structure)
-- [Simulation Overview](#simulation-overview)
-- [Key Classes and Functions](#key-classes-and-functions)
-- [Running the Simulation](#running-the-simulation)
-- [Outputs](#outputs)
-- [License](#license)
-
-## Installation
-
-### Prerequisites
-Ensure you have Python 3.x installed along with the following libraries:
-- `numpy`
-- `matplotlib`
-- `seaborn`
-- `pandas`
-- `pymdp`
-
-You can install these dependencies using pip:
-```bash
-pip install numpy matplotlib seaborn pandas pymdp
-```
-
-## Project Structure
-- **Act_Inf_T_maze_preferences.py**: Main script containing the environment setup, agent's active inference loop, and simulation parameters.
-- **Environment setup**: Defines the grid world for the T-maze and the agent's possible actions.
-- **Simulation logic**: The core functions that define agent behavior and belief updating.
-
-## Simulation Overview
-The simulation models an agent navigating a grid world with a T-maze layout. The agent receives rewards or losses depending on the context (which arm of the maze is better). The agent uses **active inference** to infer its current state and decide on actions that maximize expected rewards.
-
-### Key Features:
-- The agent is modeled to handle uncertain environments.
-- The agent has access to probabilistic hints about which arm of the maze will provide a better reward.
-- The simulation runs multiple rounds with different combinations of reward, punishment, and neutral parameters.
-
-## Key Classes and Functions
-
-### Classes
-- **Tmaze_grid**: Defines the T-maze environment, including how the agent moves through the grid, receives hints, and observes rewards.
+## Features
+- **Custom Grid-Based T-Maze**: The environment consists of 7 location states, forcing the agent to make multi-step decisions, incorporating more complex trial structures.
+- **Hint and Reward Mechanism**: The agent receives probabilistic hints about which arm of the maze will offer a reward and navigates the environment accordingly.
+- **C-Matrix Exploration**: The reward, punishment, and neutral parameters of the C-matrix are varied to study their impact on agent behavior.
   
-### Functions
-- **create_A()**: Generates the observation likelihood matrix (how the agent perceives the environment).
-- **create_B()**: Defines the agent’s state transitions (how the agent's actions change its state).
-- **create_C()**: Constructs the agent’s reward matrix (how rewards and punishments affect the agent’s decisions).
-- **create_D()**: Defines the agent's initial beliefs about its context and location.
-- **run_active_inference_loop()**: Executes the active inference loop, where the agent continuously updates its beliefs and chooses actions based on expected free energy.
+  - **Reward Parameter**: Determines the attractiveness of reaching the correct arm.
+  - **Punishment Parameter**: Represents the cost of choosing the wrong arm.
+  - **Neutral Parameter**: Encodes the "urgency" for the agent to choose an arm. A higher neutral value makes the agent feel less urgency, possibly leading it to gather more information at the hint location, while a more negative value increases urgency, pushing the agent to choose an arm sooner, even with uncertainty.
 
-## Running the Simulation
+## Files
+- **`Act_Inf_T_maze_preferences.py`**: The main Python file containing the environment setup, Active Inference agent, and parameterized simulations.
 
-To run the simulation, execute the script:
+## How it Works
+1. **Environment Setup**: The T-maze is represented on a 3x5 grid, with specific locations for the start, hint, left arm, and right arm. The agent must move from the start, interpret the hint, and choose an arm to receive a reward (or loss).
+   
+2. **Agent Behavior**: The agent uses an Active Inference model based on free energy minimization, implemented with the `pymdp` library. It updates its beliefs and actions at each step to maximize expected free energy (balance between epistemic value and pragmatic rewards).
+
+3. **Parameter Exploration**: The reward, punishment, and neutral values in the C-matrix are adjusted to explore how these parameters influence the agent's behavior:
+   - **Neutral Parameter's Role**: The neutral parameter introduces urgency. If it is not sufficiently negative, the agent may focus too much on epistemic value (gathering information) by staying in the cue location without moving forward. On the other hand, if the neutral parameter is too negative, the agent may rush to choose an arm even with insufficient certainty.
+
+## Prerequisites
+- Python 3.x
+- Required Libraries:
+  - `pymdp`
+  - `matplotlib`
+  - `seaborn`
+  - `numpy`
+  - `pandas`
+
+Install the dependencies using pip:
 ```bash
-python Act_Inf_T_maze_preferences.py
+pip install pymdp matplotlib seaborn numpy pandas
 ```
 
-The simulation will run 10 rounds with 7 steps each, for various combinations of reward, punishment, and neutral parameters. The agent’s behavior will be recorded and saved to a CSV file.
+## How to Run
+1. Clone the repository:
+    ```bash
+    git clone <repo-url>
+    cd <repo-folder>
+    ```
 
-### Key Parameters
-- `N_rounds`: Number of rounds for each parameter combination.
-- `N_steps`: Number of steps in each round.
-- `reward_pars`: List of reward parameter values.
-- `pun_pars`: List of punishment parameter values.
-- `neutral_pars`: List of neutral parameter values.
+2. Run the simulation script:
+    ```bash
+    python Act_Inf_T_maze_preferences.py
+    ```
 
-## Outputs
-The results are saved as a CSV file (`df_C.csv`). Each row in the CSV represents a single trial, with the following columns:
-- `Reward_par`: The reward parameter used in the trial.
-- `Pun_par`: The punishment parameter used in the trial.
-- `Neutral_par`: The neutral parameter used in the trial.
-- `n`: Trial number.
-- `Context`: The context for the trial (which arm was better).
-- `N_hints`: Number of hints the agent used.
-- `Chosen_Arm`: The arm chosen by the agent.
-- `Outcome`: The outcome (reward or loss) of the trial.
-- `Posterior`: The agent’s posterior belief about the context at the end of the trial.
+3. The simulation will run for multiple rounds with different C-matrix parameter combinations, and the results will be saved to a CSV file (`df_C_1.csv`).
 
-## License
-This project is open-source and licensed under the MIT License.
-```
+## Results
+The simulation results, stored in a CSV file, include:
+- **Number of Hints**: How many hints the agent took during the trial.
+- **Chosen Arm**: The arm the agent chose at the end of the maze.
+- **Outcome**: Whether the agent received a reward or a loss.
+- **Belief Posterior**: The agent’s final belief about the correct context.
 
-### Notes:
-1. Ensure you adjust file paths and outputs as needed (e.g., where the CSV file is saved).
-2. Replace the placeholders with your project's actual paths and details if necessary.
+## Customization
+You can modify the parameters in the script to explore different scenarios:
+- **p_hint_env**: Probability of receiving a correct hint.
+- **p_reward_env**: Probability of receiving a reward at the end of the maze.
+- **C-Matrix Parameters**: Reward, punishment, and neutral values can be modified to observe their effects on agent behavior.
+
+## Visualizations
+The script includes functions to visualize:
+- The agent’s belief distribution over time.
+- The agent's current position on the grid.
+- The likelihood and transition matrices.
+
+## Contact
+For questions or feedback, please reach out at `Philus012@gmail.com`.
