@@ -1,4 +1,4 @@
-# T-Maze Active Inference Simulation
+# T-Maze Active Inference Simulation and results analysis
 
 ## Overview
 This project implements an Active Inference agent navigating a custom-designed T-maze environment. The environment is a grid-based T-maze with 7 possible locations, adding complexity to the typical T-maze setup. The agent must navigate the maze, receive hints, and plan its actions to maximize rewards while avoiding punishments. This simulation focuses on exploring how changes in the reward, punishment, and neutral parameters (C-matrix) affect the agent's decision-making dynamics.
